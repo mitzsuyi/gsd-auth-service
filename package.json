@@ -1,0 +1,33 @@
+{
+  "name": "gsd-auth-challenge",
+  "version": "1.0.0",
+  "description": "GSD Auth Challenge Backend",
+  "main": "index.js",
+  "engines": {
+    "node": "8.9.4"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "marton.csikos@gmail.com",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "boom": "^7.1.1",
+    "hapi": "^17.2.0",
+    "hapi-auth-jwt2": "^8.1.0",
+    "hapi-mongodb": "^7.1.0",
+    "joi": "^13.1.0",
+    "jsonwebtoken": "^8.1.0",
+    "md5": "^2.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.15.0",
+    "eslint-config-hapi": "^11.1.0",
+    "eslint-plugin-hapi": "^4.1.0",
+    "nodemon": "^1.14.11"
+  }
+}

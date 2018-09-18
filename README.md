@@ -25,61 +25,61 @@ Minimum 8 characters, contains a lowercase and an uppercase letter and a number.
 #### POST /users
 Creates a User.
 
-**Authenticated**: false
-**Request format**: application/x-www-form-urlencoded
-**Request payload**:
-  email: string, required
-  name: string, required,
-  password: passwordSchema, required
+**Authenticated**: false  
+**Request format**: application/x-www-form-urlencoded  
+**Request payload**:  
+  email: string, required  
+  name: string, required,  
+  password: passwordSchema, required  
 
-**Response format**: application/json
-**Response payload**:
-  jwt: string (short term access token)
-  refresh_token: string (refresh token)
+**Response format**: application/json  
+**Response payload**:  
+  jwt: string (short term access token)  
+  refresh_token: string (refresh token)  
 
 
 #### POST /access-tokens
 Logs in a user.
 
-**Authenticated**: false
-**Request format**: application/x-www-form-urlencoded 
-**Request payload**:
-  email: string, required
-  name: string, required,
+**Authenticated**: false  
+**Request format**: application/x-www-form-urlencoded  
+**Request payload**:  
+  email: string, required  
+  name: string, required  
 
-**Response format**: application/json
-**Response payload**:
-  jwt: string (short term access token)
-  refresh_token: string (refresh token)
+**Response format**: application/json  
+**Response payload**:  
+  jwt: string (short term access token)  
+  refresh_token: string (refresh token)  
 
 #### POST /access-tokens/refresh
 Refreshes an expired access token.
+ 
+**Authenticated**: Yes (expired tokens are accepted)  
+**Request format**: application/x-www-form-urlencoded   
+**Request payload**:  
+  refresh_token: string, required  
 
-**Authenticated**: Yes (expired tokens are accepted)
-**Request format**: application/x-www-form-urlencoded 
-**Request payload**:
-  refresh_token: string, required
-
-**Response format**: application/json
-**Response payload**:
-  jwt: string (short term access token)
+**Response format**: application/json  
+**Response payload**:  
+  jwt: string (short term access token)  
 
 #### DELETE /access-tokens
 Logs out a user.
 
-**Authenticated**: Yes
-**Request format**: application/x-www-form-urlencoded 
-**Request payload**:
-  refresh_token: string, required
+**Authenticated**: Yes  
+**Request format**: application/x-www-form-urlencoded  
+**Request payload**:  
+  refresh_token: string, required  
 
 **Response format**: 204 No Content
 
 #### GET /me
 Returns current user information.
 
-**Authenticated**: Yes
-**Response format**: application/json
-**Response payload**:
-  name: string
-  email: string
-  avatar_url: string
+**Authenticated**: Yes  
+**Response format**: application/json  
+**Response payload**:  
+  name: string  
+  email: string  
+  avatar_url: string  

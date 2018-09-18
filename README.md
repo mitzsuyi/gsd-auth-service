@@ -4,12 +4,12 @@
   1) Clone the repo
   2) `npm install`
   3) Start a local mongodb instance. You can run it in a docker container or just download mongodb from their website.
-  4) npm start
+  4) `npm start`
 
 Mongodb in docker:
 ```
 docker pull mongo
-docker run --name some-mongo -p 2017:2017 -d mongo
+docker run --name some-mongo -p 27017:27017 -d mongo
 ```
 
 ### Authentication
@@ -26,7 +26,7 @@ Minimum 8 characters, contains a lowercase and an uppercase letter and a number.
 Creates a User.
 
 **Authenticated**: false
-**Request format**: application/x-www-form-urlencoded 
+**Request format**: application/x-www-form-urlencoded
 **Request payload**:
   email: string, required
   name: string, required,

@@ -12,7 +12,10 @@ const start = async function () {
 
   const server = new Hapi.Server({
     host: HOST,
-    port: PORT
+    port: PORT,
+    routes: {
+      cors: true
+    }
   });
 
   // Register modules

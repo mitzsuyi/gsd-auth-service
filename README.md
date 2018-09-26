@@ -45,7 +45,7 @@ Logs in a user.
 **Request format**: application/x-www-form-urlencoded  
 **Request payload**:  
   email: string, required  
-  name: string, required  
+  password: passwordSchema, required  
 
 **Response format**: application/json  
 **Response payload**:  

@@ -14,7 +14,10 @@ const start = async function () {
     host: HOST,
     port: PORT,
     routes: {
-      cors: true
+      cors: {
+        origin: ['*'],
+        additionalHeaders: ['x-access-token']
+      }
     }
   });
 

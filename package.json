@@ -9,13 +9,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --fix",
+    "test": "npm run lint ; lab -Lv "
   },
   "author": "marton.csikos@gmail.com",
   "license": "UNLICENSED",
   "dependencies": {
-    "bcrypt": "^1.0.3",
+    "bcrypt": "^3.0.1",
     "boom": "^7.1.1",
     "hapi": "^17.2.0",
     "hapi-auth-jwt2": "^8.1.0",
@@ -28,6 +28,8 @@
     "eslint": "^4.15.0",
     "eslint-config-hapi": "^11.1.0",
     "eslint-plugin-hapi": "^4.1.0",
+    "code": "^5.2.0",
+    "lab": "^16.1.0",
     "nodemon": "^1.14.11"
   }
 }

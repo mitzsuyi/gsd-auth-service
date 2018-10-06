@@ -8,18 +8,18 @@ const User = require('./lib/user');
 
 const { HOST, PORT } = require('./environment');
 
-const start = async function () {
-
-  const server = new Hapi.Server({
-    host: HOST,
-    port: PORT,
-    routes: {
-      cors: {
-        origin: ['*'],
-        additionalHeaders: ['x-access-token']
-      }
+const _server = new Hapi.Server({
+  host: HOST,
+  port: PORT,
+  routes: {
+    cors: {
+      origin: ['*'],
+      additionalHeaders: ['x-access-token']
     }
-  });
+  }
+});
+
+const configureServer = async function (server) {
 
   // Register modules
 
@@ -34,11 +34,23 @@ const start = async function () {
   server.route({ path: '/access-tokens', method: 'POST', config: Auth.login });
   server.route({ path: '/access-tokens/refresh', method: 'POST', config: Auth.refreshToken });
   server.route({ path: '/access-tokens', method: 'DELETE', config: Auth.logout });
-
-  await server.start();
-
-  console.log(`Server running at: ${server.info.uri}`);
-
 };
 
-start();
+const start = async function (server) {
+
+  await server.start();
+  console.log(`Server running at: ${server.info.uri}`);
+};
+
+void async function () {
+
+  if (!module.parent) {
+    await configureServer(_server);
+    await start(_server);
+  }
+}();
+
+module.exports = {
+  server: _server,
+  configureServer
+};

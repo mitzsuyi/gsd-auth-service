@@ -6,6 +6,5 @@
     "rules":{
         "one-var": ["error", {"let":"consecutive"}],
         "indent": ["error", 2]
-
     }
 }

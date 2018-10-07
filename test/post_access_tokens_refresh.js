@@ -2,11 +2,17 @@
 
 const Lab = require('lab');
 
-const { describe, it } = exports.lab = Lab.script();
+const { expect } = require('code');
 
-//const { server } = require('./server');
+const { describe, it, afterEach } = exports.lab = Lab.script();
 
-const { acceptsUrlEncodedContentTye,
+const request = require('./helpers').routeRequest((server) => {
+  afterEach(async () => {
+    await server.mongo.db.collection('User').deleteMany();
+  });
+});
+
+const { acceptsUrlEncodedContentType,
   requiresAuthentication,
   respondsWithJSON,
   requiresRefreshTokenString
@@ -14,23 +20,29 @@ const { acceptsUrlEncodedContentTye,
 
 const { jwtSchema } = require('./models');
 
+const PAYLOAD = {
+  refresh_token:'expired-token'
+};
+
+const PATH = '/access_tokens/refresh';
+const METHOD = 'POST';
+
 describe('POST /access_tokens/refresh', () => {
 
   it('refreshes expired access token',() => {
 
   });
 
-  requiresAuthentication(it);
+  requiresAuthentication(it, request, METHOD, PATH, PAYLOAD);
 
-  acceptsUrlEncodedContentTye(it);
+  acceptsUrlEncodedContentType(it, request, METHOD, PATH, PAYLOAD);
 
-  requiresRefreshTokenString(it);
+  requiresRefreshTokenString(it, request, METHOD, PATH, PAYLOAD);
 
-  respondsWithJSON(it);
+  respondsWithJSON(it, request, METHOD, PATH, PAYLOAD);
 
   it('response matches jwtSchema', () => {
 
-    console.log(jwtSchema);
   });
 
 });

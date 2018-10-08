@@ -49,7 +49,7 @@ const requiresAuthentication = (it, request, method, path, payload, options) => 
   it('requires authentication', async () => {
      
     let response = await request(method, path, payload, options)
-    expect(response.statusCode).to.equal(options.statusCode)
+    expect(response.statusCode).to.equal(options.statusCode || 200)
 
     response = await request(method, path, payload);
     expect(response.statusCode).to.equal(401)

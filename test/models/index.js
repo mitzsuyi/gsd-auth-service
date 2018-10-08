@@ -12,9 +12,9 @@ const createResponseSchema = Joi.object().keys({
 });
 
 const getMeSchema =  Joi.object().keys({
-  name: Joi.string(),
-  email: Joi.string(),
-  avatar_url: Joi.string()
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  avatar_url: Joi.string().required()
 });
 
 module.exports = {

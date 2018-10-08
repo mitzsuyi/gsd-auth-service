@@ -1,6 +1,7 @@
 'use strict';
 
 const querystring = require('querystring');
+const Joi = require('joi');
 
 let TOKENS 
 
@@ -80,6 +81,10 @@ const routeRequest = (setServer) => {
   };
 };
 
+exports.validateSchema= async (object, schema, expect)=>{
+  const result =  Joi.validate(object, schema) 
+  expect(result.error).to.equal(null)
+} 
 exports.routeRequest = routeRequest;
 
 exports.responsePayloadJSON = responsePayloadJSON

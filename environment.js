@@ -6,6 +6,7 @@ const development = {
   HOST: 'localhost',
   PORT: 6060,
   APP_SECRET: LIFE_TOO_SHORT,
+  TOKEN_EXPIRY: '10m',
   MONGODB_URI: 'mongodb://localhost:27017/gsd-auth-service'
 };
 
@@ -13,11 +14,13 @@ const production = {
   HOST: process.env.HOST,
   PORT: process.env.PORT,
   APP_SECRET: process.env.APP_SECRET,
-  MONGODB_URI: process.env.MONGODB_URI
+  MONGODB_URI: process.env.MONGODB_URI,
+  TOKEN_EXPIRY: process.env.TOKEN_EXPIRY
 };
 
 const test = {
   APP_SECRET: LIFE_TOO_SHORT,
+  TOKEN_EXPIRY: '3000',
   MONGODB_URI: 'mongodb://localhost:29017/gsd-auth-service-test'
 };
 
@@ -27,4 +30,4 @@ const ENVS = {
   development
 };
 
-module.exports = ENVS[process.env.NODE_ENV];
+module.exports = ENVS[process.env.NODE_ENV || 'development'];

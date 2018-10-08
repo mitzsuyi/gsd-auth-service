@@ -10,9 +10,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint . --fix",
-    "lab": "lab ",
+    "lab": "lab -m 6000",
     "test-catalog": "lab -v -d",
-    "test": "npm run lint ; lab -Lv "
+    "test": "npm run lint ; lab -Lv -m 6000"
   },
   "author": "marton.csikos@gmail.com",
   "license": "UNLICENSED",
@@ -27,6 +27,7 @@
     "md5": "^2.2.1"
   },
   "devDependencies": {
+    "await-sleep": "0.0.1",
     "code": "^5.2.0",
     "eslint": "^4.15.0",
     "eslint-config-hapi": "^11.1.0",

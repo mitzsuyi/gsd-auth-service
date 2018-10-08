@@ -106,8 +106,10 @@ const routeRequest = function () {
     }
 
     Object.assign(options, params.options || {});
-    if (DELETE_POST.includes(method) && !(params.options && params.options.headers)) {
-      Object.assign(options, URLENCODED_HEADER);
+    if (DELETE_POST.includes(method) && !(params.options && params.options.headers && params.options.headers['Content-Type'])) {
+      const headers = options.headers || {};
+      Object.assign(headers, URLENCODED_HEADER.headers);
+      options.headers = headers;
     }
 
     const request = Object.assign({},

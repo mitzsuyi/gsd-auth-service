@@ -12,6 +12,10 @@ docker pull mongo
 docker run --name some-mongo -p 27017:27017 -d mongo
 ```
 
+### How to test
+  1) configure environment.js for test with a mongodb url
+  2) npm test -- all should pass!
+
 ### Authentication
 A request will be authenticated if it contains an `x-access-token` header with a valid jwt access token issued by the login or signup endpoints. Access tokens are valid for 10 minutes (feel free to change this during development).
 

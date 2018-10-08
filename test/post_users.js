@@ -8,7 +8,7 @@ const { describe, it } = exports.lab = Lab.script();
 
 const request = require('./helpers').routeRequest();
 
-const { behavesLikeCreateUser } = require('./behaviors');
+const { behavesLikeCreateUser, tokenExpiresInShortTime } = require('./behaviors');
 
 const createUser = require('./shared').createUser;
 
@@ -27,5 +27,8 @@ describe('POST /users', () => {
       expect(response.statusCode).to.equal(200);
     });
     behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
+
+    tokenExpiresInShortTime(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
+
   });
 });

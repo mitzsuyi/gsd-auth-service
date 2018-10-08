@@ -11,7 +11,9 @@ const request = require('./helpers').routeRequest();
 const { acceptsUrlEncodedContentType,
   requiresAuthentication,
   respondsWithJSON,
-  requiresRefreshTokenString
+  requiresRefreshTokenString,
+  tokenExpiresInShortTime,
+  refreshesExpiredToken
 } = require('./behaviors');
 
 const { jwtSchema } = require('./models');
@@ -44,5 +46,9 @@ describe('POST /access_tokens/refresh', () => {
     const responseJSON = responsePayloadJSON(response);
     validateSchema(responseJSON, jwtSchema, expect);
   });
+
+  tokenExpiresInShortTime(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
+
+  refreshesExpiredToken(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
 
 });

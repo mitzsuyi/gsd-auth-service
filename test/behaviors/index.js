@@ -3,6 +3,9 @@
 const { createResponseSchema } = require('../models');
 const { expect } = require('code');
 const { responsePayloadJSON, validateSchema } = require('../helpers');
+const Sleep = require('await-sleep');
+
+const { TOKEN_EXPIRY } = require('../../environment');
 
 const acceptsUrlEncodedContentType = (it, request, method, path, payload, options = {}) => {
 
@@ -26,6 +29,59 @@ const respondsWithJSON = (it, request, method, path, payload) => {
 
     const response = await request(method, path, payload);
     expect(response.headers['content-type']).to.include('application/json');
+  });
+};
+
+const accessTokenHeaderOptions = function (accessToken){
+
+  return { options:{ headers:{ 'x-access-token': accessToken } } };
+
+
+};
+
+const getMe = function (request, accessToken){
+
+  return request('GET', '/me', {}, accessTokenHeaderOptions(accessToken));
+};
+
+const refreshesExpiredToken = (it, request, method, path, payload, options) => {
+
+  it('refreshes expired token', async () => {
+
+    let response = await request('POST', '/access-tokens', Shared.loginData, {});
+
+    expect(response.statusCode).to.equal(200);
+
+    await Sleep(parseInt(TOKEN_EXPIRY) * 1.5);
+
+    let accessToken = responsePayloadJSON(response);
+
+    response = await getMe(request, accessToken.jwt);
+    expect(response.statusCode).to.equal(401);
+
+    response = await request('POST', '/access-tokens/refresh', { refresh_token: accessToken.refresh_token }, accessTokenHeaderOptions(accessToken.jwt));
+    expect(response.statusCode).to.equal(200);
+    accessToken = responsePayloadJSON(response);
+    response = await getMe(request, accessToken.jwt);
+    expect(response.statusCode).to.equal(200);
+  });
+};
+
+const tokenExpiresInShortTime = (it, request, method, path, payload, options) => {
+
+  it('token expires in short time', async () => {
+
+    let response = await request(method, path, payload, options);
+
+    expect(response.statusCode).to.equal(200);
+
+    await Sleep(parseInt(TOKEN_EXPIRY) * 1.5);
+
+    const accessToken = responsePayloadJSON(response).jwt;
+    response = await getMe(request, accessToken);
+
+    expect(response.statusCode).to.equal(401);
+    expect(response.result.message).to.include('Expired token');
   });
 };
 
@@ -111,5 +167,7 @@ module.exports = {
   acceptsUrlEncodedContentType,
   requiresAuthentication,
   respondsWithJSON,
-  requiresRefreshTokenString
+  requiresRefreshTokenString,
+  refreshesExpiredToken,
+  tokenExpiresInShortTime
 };

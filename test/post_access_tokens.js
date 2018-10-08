@@ -8,16 +8,15 @@ const { describe, it } = exports.lab = Lab.script();
 
 const request = require('./helpers').routeRequest();
 
-const { behavesLikeCreateUser } = require('./behaviors');
+const { behavesLikeCreateUser, tokenExpiresInShortTime } = require('./behaviors');
 
-const userData = require('./shared').users;
+const loginData = require('./shared').loginData;
 
-const PAYLOAD = {
-  email: userData.email,
-  password: userData.password
-};
+const PAYLOAD = loginData;
+
 const PATH = '/access-tokens';
 const METHOD = 'POST';
+const OPTIONS = {};
 
 describe('POST /access_tokens', () => {
 
@@ -27,4 +26,7 @@ describe('POST /access_tokens', () => {
     expect(response.statusCode).to.equal(200);
   });
   behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD, { badPasswordCode:401 });
+
+  tokenExpiresInShortTime(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
+
 });

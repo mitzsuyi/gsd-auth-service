@@ -4,13 +4,9 @@ const Lab = require('lab');
 
 const { expect } = require('code');
 
-const { describe, it, afterEach } = exports.lab = Lab.script();
+const { describe, it } = exports.lab = Lab.script();
 
-const request = require('./helpers').routeRequest((server) => {
-  afterEach(async () => {
-    await server.mongo.db.collection('User').deleteMany();
-  });
-});
+const request = require('./helpers').routeRequest();
 
 const { acceptsUrlEncodedContentType,
   requiresAuthentication,
@@ -19,17 +15,18 @@ const { acceptsUrlEncodedContentType,
 } = require('./behaviors');
 
 const { jwtSchema } = require('./models');
-const {responsePayloadJSON, validateSchema} = require('./helpers')
+const { responsePayloadJSON, validateSchema } = require('./helpers');
 
-const OPTIONS = {authenticated:true, withRefreshToken:true}
-const PAYLOAD={}
+const OPTIONS = { authenticated:true, withRefreshToken:true };
+const PAYLOAD = {};
 const PATH = '/access-tokens/refresh';
 const METHOD = 'POST';
 
 describe('POST /access_tokens/refresh', () => {
 
-  it('refreshes expired access token', async() => {
-    const response = await request(METHOD, PATH, PAYLOAD, OPTIONS);    
+  it('refreshes expired access token', async () => {
+
+    const response = await request(METHOD, PATH, PAYLOAD, OPTIONS);
     expect(response.statusCode).to.equal(200);
   });
 
@@ -41,11 +38,11 @@ describe('POST /access_tokens/refresh', () => {
 
   respondsWithJSON(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
 
-  it('response matches jwtSchema', async() => {
+  it('response matches jwtSchema', async () => {
 
     const response = await request(METHOD, PATH, PAYLOAD, OPTIONS);
     const responseJSON = responsePayloadJSON(response);
-    validateSchema(responseJSON, jwtSchema, expect)
+    validateSchema(responseJSON, jwtSchema, expect);
   });
 
 });

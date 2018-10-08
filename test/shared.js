@@ -13,6 +13,6 @@ const createUser = {
 
 
 module.exports = {
-  createUser: createUser,  
-  users: Object.assign({}, createUser, {password_bad: BAD_PASSWORD})
+  createUser,
+  users: Object.assign({}, createUser, { password_bad: BAD_PASSWORD })
 };

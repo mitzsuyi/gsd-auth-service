@@ -1,28 +1,31 @@
 'use strict';
 
-const querystring = require('querystring');
+const Querystring = require('querystring');
 const Joi = require('joi');
 
-let TOKENS 
+const UserData = require('./shared');
 
-let _server;
-
-const userData = require('./shared');
 const responsePayloadJSON = (response) => JSON.parse(response.payload);
+const { dbClearUsers } = require('./db');
 
-const getServer = async (setServer, params) => {
+const clearUsers = function (server) {
 
-  if (_server === undefined) {
-    _server = await require('./server');
-    await _server.mongo.db.collection('User').deleteMany();
-    if (!params.skipTokens){
-     const response = await routeRequest(setServer)("POST", "/users", userData.createUser)
-     TOKENS = responsePayloadJSON(response)
-    }
-   setServer(_server);
+  return dbClearUsers(server);
+};
+
+const setServer = async (params, state) => {
+
+  if (state.getServer() === undefined) {
+    const server = await require('./server');
+    state.setServer(server);
   }
+};
 
-  return _server;
+const setTokens = async (params, server, state) => {
+
+  await clearUsers(server);
+  const response = await state.doRequest('POST', '/users', UserData.createUser, { skipTokens:true });
+  state.setTokens(responsePayloadJSON(response) );
 };
 
 
@@ -32,43 +35,80 @@ const URLENCODED_HEADER = {
   }
 };
 
-exports.URLENCODED_HEADER = URLENCODED_HEADER
+exports.URLENCODED_HEADER = URLENCODED_HEADER;
 
-const inject = async function(_request, setServer, params) {
-  const request = Object.assign({}, _request)
-  const server = await getServer(setServer, params);
+const inject = async function (_request, params, state) {
+
+  const request = Object.assign({}, _request);
+  await setServer(params, state);
+  const server = state.getServer();
+  let tokens = state.getTokens();
+  if (params.authenticated && !params.skipTokens){
+    if (!tokens || params.refreshTokens) {
+      await setTokens(params, server, state);
+      tokens = state.getTokens();
+    }
+  }
+
   if (params.authenticated) {
-     let headers = Object.assign({}, request.headers || {})
-      Object.assign(headers, {
-          'x-access-token': TOKENS.jwt
-        }
-      )
-      request.headers = headers 
+    const headers = Object.assign({}, request.headers || {});
+    Object.assign(headers, {
+      'x-access-token': tokens.jwt
     }
-   if (params.withRefreshToken) {
-     Object.assign(request.payload, {refresh_token: TOKENS.refresh_token})
-    }
+    );
+    request.headers = headers;
+  }
 
-  if (request.headers && request.headers['Content-Type'] == URLENCODED_HEADER.headers['Content-Type']) {  
-      request.payload = querystring.stringify(request.payload)
-   }
+  if (params.withRefreshToken) {
+    Object.assign(request.payload, { refresh_token: tokens.refresh_token });
+  }
+
+  if (request.headers && request.headers['Content-Type'] === URLENCODED_HEADER.headers['Content-Type']) {
+    request.payload = Querystring.stringify(request.payload);
+  }
+
+  if (params.clearUsers){
+    await clearUsers(server);
+  }
+
   return server.inject(request);
 };
 
-const DELETE_POST=["POST","DELETE"]
-const routeRequest = (setServer) => {
+const DELETE_POST = ['POST','DELETE'];
+const routeRequest = function () {
 
-  return function (method, path, payload, params={}) {
+  const state = {
+    _server: undefined,
+    _tokens: undefined,
+    getServer: function (){
+
+      return state._server;
+    },
+    getTokens:function (){
+
+      return state._tokens;
+    },
+    setServer: (server) => {
+
+      state._server = server;
+    },
+    setTokens: (tokens) => {
+
+      state._tokens = tokens;
+    }
+  };
+
+  const doRequest = function (method, path, payload, params = {}) {
 
     const options = { payload: Object.assign({}, payload) };
     if (!options.payload) {
       delete options.payload;
     }
 
-    Object.assign(options, params.options || {}) 
+    Object.assign(options, params.options || {});
     if (DELETE_POST.includes(method) && !(params.options && params.options.headers)) {
-      Object.assign(options, URLENCODED_HEADER)
-    } 
+      Object.assign(options, URLENCODED_HEADER);
+    }
 
     const request = Object.assign({},
       {
@@ -77,14 +117,20 @@ const routeRequest = (setServer) => {
       },
       options
     );
-    return inject(request, setServer, params);
+    state.doRequest = doRequest;
+
+    return inject(request, params, state);
   };
+
+  return doRequest;
 };
 
-exports.validateSchema= async (object, schema, expect)=>{
-  const result =  Joi.validate(object, schema) 
-  expect(result.error).to.equal(null)
-} 
+exports.validateSchema = function (object, schema, expect) {
+
+  const result =  Joi.validate(object, schema);
+  expect(result.error).to.equal(null);
+};
+
 exports.routeRequest = routeRequest;
 
-exports.responsePayloadJSON = responsePayloadJSON
+exports.responsePayloadJSON = responsePayloadJSON;

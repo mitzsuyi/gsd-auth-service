@@ -14,11 +14,12 @@ const request = require('./helpers').routeRequest((server) => {
 
 const { behavesLikeCreateUser } = require('./behaviors');
 
-const userData = require('./shared').users;
+const createUser = require('./shared').createUser;
 
-const PAYLOAD = userData.createUser
+const PAYLOAD = createUser
 const PATH = '/users';
 const METHOD = 'POST';
+const OPTIONS={skipTokens:true}
 
 describe('POST /users', () => {
 
@@ -26,11 +27,9 @@ describe('POST /users', () => {
 
     it('creates a user', async () => {
 
-      const response = await request(METHOD, PATH, {
-        payload: PAYLOAD
-      });
+      const response = await request(METHOD, PATH, PAYLOAD, OPTIONS)
       expect(response.statusCode).to.equal(200);
     });
-    behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD);
+    behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD, OPTIONS);
   });
 });

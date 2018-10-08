@@ -12,7 +12,7 @@ const acceptsUrlEncodedContentType = (it, request, method, path, payload, option
     const params = Object.assign({options:{
       headers:{"Content-Type": "application/json"}
     }}, options)
-    
+
     let response = await request(method, path, payload, params)
     expect(response.statusCode).to.equal(400);
     
@@ -61,9 +61,9 @@ const userData = shared.users, createUser= shared.createUser
 
 const clone = (object) => Object.assign({}, object);
 
-const behavesLikeCreateUser = (it, request, method, path, payload) => {
+const behavesLikeCreateUser = (it, request, method, path, payload, options={}) => {
 
-  acceptsUrlEncodedContentType(it, request, method, path, payload);
+  acceptsUrlEncodedContentType(it, request, method, path, payload, options);
 
   it('requires both email and password', async () => {
 
@@ -86,18 +86,18 @@ const behavesLikeCreateUser = (it, request, method, path, payload) => {
   it('password must match passwordSchema', async () => {
 
     const withBadPassword = Object.assign({}, payload, { password:userData.password_bad });
-    let response = await request(method, path, withBadPassword);
-    expect(response.statusCode).to.equal(401);
+    let response = await request(method, path, withBadPassword, options);
+    expect(response.statusCode).to.equal(options.badPasswordCode || 400);
     const withGoodPassword = Object.assign({}, payload, { password:userData.password });
-    response = await request(method, path, withGoodPassword);
+    response = await request(method, path, withGoodPassword, options);
     expect(response.statusCode).to.equal(200);
   });
 
-  respondsWithJSON(it, request, method, path, payload);
+  respondsWithJSON(it, request, method, path, payload, options);
 
   it('response matches createResponseSchema', async () => {
 
-    const response = await request(method, path, payload);
+    const response = await request(method, path, payload, options);
     expect(response.statusCode).to.equal(200);
     const responseJSON = responsePayloadJSON(response);
     validateSchema(responseJSON, createResponseSchema, expect)

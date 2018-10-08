@@ -29,5 +29,5 @@ describe('POST /access_tokens', () => {
     const response = await request(METHOD, PATH, PAYLOAD)
     expect(response.statusCode).to.equal(200)
   });
-  behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD);
+  behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD, {badPasswordCode:401});
 });

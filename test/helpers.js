@@ -10,13 +10,15 @@ let _server;
 const userData = require('./shared');
 const responsePayloadJSON = (response) => JSON.parse(response.payload);
 
-const getServer = async (setServer) => {
+const getServer = async (setServer, params) => {
 
   if (_server === undefined) {
     _server = await require('./server');
     await _server.mongo.db.collection('User').deleteMany();
-   const response = await routeRequest(setServer)("POST", "/users", userData.createUser)
-   TOKENS = responsePayloadJSON(response)
+    if (!params.skipTokens){
+     const response = await routeRequest(setServer)("POST", "/users", userData.createUser)
+     TOKENS = responsePayloadJSON(response)
+    }
    setServer(_server);
   }
 
@@ -34,7 +36,7 @@ exports.URLENCODED_HEADER = URLENCODED_HEADER
 
 const inject = async function(_request, setServer, params) {
   const request = Object.assign({}, _request)
-  const server = await getServer(setServer);
+  const server = await getServer(setServer, params);
   if (params.authenticated) {
      let headers = Object.assign({}, request.headers || {})
       Object.assign(headers, {

@@ -50,6 +50,7 @@ const inject = async (request, setServer, params) => {
   if (request.headers && request.headers == URLENCODED_HEADER.headers) {  
       request.payload = querystring.stringify(request.payload)
    }
+
   return server.inject(request);
 };
 
@@ -76,7 +77,6 @@ const routeRequest = (setServer) => {
       },
       options
     );
-
     return inject(request, setServer, params);
   };
 };

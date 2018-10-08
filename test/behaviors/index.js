@@ -4,7 +4,7 @@ const Joi = require('joi');
 
 const { createResponseSchema } = require('../models');
 const { expect } = require('code');
-const responsePayloadJSON = require('../helpers').responsePayloadJSON;
+const {responsePayloadJSON, validateSchema} = require('../helpers')
 
 const acceptsUrlEncodedContentType = (it, request, method, path, payload, options={}) => {
 
@@ -65,25 +65,29 @@ const behavesLikeCreateUser = (it, request, method, path, payload) => {
 
   acceptsUrlEncodedContentType(it, request, method, path, payload);
 
-  it('requires both email and password', () => {
+  it('requires both email and password', async () => {
 
-    const responses = [];
-    let response, without;
+    const payloads = [], responses=[];
+    let wEmail, wPassword, without;
 
-    ['email', 'password'].forEach(async (omit) => {
+    ['email', 'password'].forEach((omit) => {
+      without = clone(payload)
+      delete without[omit];
+      payloads.push(without)
+    })  
+    responses.push(await request(method, path, payloads[0]))
+    responses.push(await request(method, path, payloads[1]))
 
-      without = delete clone(payload)[omit];
-      response = await request(method, path, without);
-      responses.push(response);
-    });
-    expect(responses[0]).to.equal(400);
-    expect(responses[1]).to.equal(400);
+    responses.forEach((response)=>{
+
+      expect(response.statusCode).to.equal(400)
+    })
   });
   it('password must match passwordSchema', async () => {
 
     const withBadPassword = Object.assign({}, payload, { password:userData.password_bad });
     let response = await request(method, path, withBadPassword);
-    expect(response.statusCode).to.equal(400);
+    expect(response.statusCode).to.equal(401);
     const withGoodPassword = Object.assign({}, payload, { password:userData.password });
     response = await request(method, path, withGoodPassword);
     expect(response.statusCode).to.equal(200);
@@ -96,7 +100,7 @@ const behavesLikeCreateUser = (it, request, method, path, payload) => {
     const response = await request(method, path, payload);
     expect(response.statusCode).to.equal(200);
     const responseJSON = responsePayloadJSON(response);
-    expect(Joi.validate(responseJSON, createResponseSchema)).to.equal(true);
+    validateSchema(responseJSON, createResponseSchema, expect)
   });
 };
 

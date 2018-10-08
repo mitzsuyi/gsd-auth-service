@@ -20,13 +20,14 @@ const PAYLOAD = {
   email: userData.email,
   password: userData.password
 };
-const PATH = '/access_tokens';
+const PATH = '/access-tokens';
 const METHOD = 'POST';
 
 describe('POST /access_tokens', () => {
 
-  it('logs a user in',() => {
-
+  it('logs a user in', async () => {
+    const response = await request(METHOD, PATH, PAYLOAD)
+    expect(response.statusCode).to.equal(200)
   });
-  behavesLikeCreateUser(it, METHOD, PATH, PAYLOAD);
+  behavesLikeCreateUser(it, request, METHOD, PATH, PAYLOAD);
 });

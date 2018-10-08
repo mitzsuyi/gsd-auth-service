@@ -32,40 +32,38 @@ const URLENCODED_HEADER = {
 
 exports.URLENCODED_HEADER = URLENCODED_HEADER
 
-const inject = async (request, setServer, params) => {
-
+const inject = async function(_request, setServer, params) {
+  const request = Object.assign({}, _request)
   const server = await getServer(setServer);
   if (params.authenticated) {
-     let headers = request.headers || {}
+     let headers = Object.assign({}, request.headers || {})
       Object.assign(headers, {
           'x-access-token': TOKENS.jwt
         }
       )
-      request.headers = headers
+      request.headers = headers 
     }
    if (params.withRefreshToken) {
      Object.assign(request.payload, {refresh_token: TOKENS.refresh_token})
     }
 
-  if (request.headers && request.headers == URLENCODED_HEADER.headers) {  
+  if (request.headers && request.headers['Content-Type'] == URLENCODED_HEADER.headers['Content-Type']) {  
       request.payload = querystring.stringify(request.payload)
    }
-
   return server.inject(request);
 };
 
 const DELETE_POST=["POST","DELETE"]
 const routeRequest = (setServer) => {
 
-  return async (method, path, payload, params={}) => {
+  return function (method, path, payload, params={}) {
 
-    const options = { payload };
+    const options = { payload: Object.assign({}, payload) };
     if (!options.payload) {
       delete options.payload;
     }
 
-    Object.assign(options, params.options) 
-
+    Object.assign(options, params.options || {}) 
     if (DELETE_POST.includes(method) && !(params.options && params.options.headers)) {
       Object.assign(options, URLENCODED_HEADER)
     } 

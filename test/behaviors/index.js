@@ -35,7 +35,7 @@ const requiresRefreshTokenString = (it, request, method, path, payload, options)
   it('requires refresh token string', async () => {
      const withoutRefreshToken = clone(options)
      delete withoutRefreshToken.withRefreshToken
-     console.log(withoutRefreshToken)
+
      let response = await request(method, path, payload, withoutRefreshToken);
      expect(response.statusCode).to.equal(400)
 
@@ -51,7 +51,7 @@ const requiresAuthentication = (it, request, method, path, payload, options) => 
     let response = await request(method, path, payload, options)
     expect(response.statusCode).to.equal(options.statusCode || 200)
 
-    response = await request(method, path, payload);
+    response = await request(method, path, payload, {withRefreshToken: true});
     expect(response.statusCode).to.equal(401)
   });
 };
